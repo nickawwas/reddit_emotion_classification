@@ -1,16 +1,26 @@
-# pip3 install numpy pandas matplotlib scikit-learn gensim nltk 
+# pip3 install numpy matplotlib scikit-learn gensim nltk 
 
 import json
 import numpy as np
 from matplotlib import pyplot as plt
-import pandas as pd
 
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import train_test_split
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural network import MLPClassifier
+from sklearn.neural_network import MLPClassifier
 
+
+def plot_distribution(np_data, data_type):
+    # Obtain number of occurences of each emotion or sentiment
+    labels, frequency = np.unique(np_data, return_counts=True)
+
+    # Plot emotions or sentiments in pie chart
+    plt.pie(frequency, labels=labels, autopct='%1.2f%%')
+    plt.title(f"{data_type} Distribution")
+    plt.savefig(fname=f"{data_type}_distribution.pdf")
+
+    return labels
 
 # Open emotions dataset
 emotions_dataset = 'fakeemotions.json'
@@ -26,19 +36,25 @@ with open(emotions_dataset, 'r') as file:
     emotions = np_data[:, 1]
     sentiments = np_data[:, 2]
 
-    # # Obtain number of occurences of each emotion
-    # counts = pd.Series(emotions).value_counts()
+    '''
+    # Create 1 figure with 2 subplots
+    _, (ax1, ax2) = plt.subplots(1, 2)
 
-    # # Plot emotions in pie chart
-    # plt.pie(counts) # labels=counts.keys
-    # plt.show()
+    # Obtain number of occurences of each emotion
+    emotions_labels, emotions_frequency = np.unique(emotions, return_counts=True)
 
-    # # Obtain number of occurences of each emotion
-    # sentiment_counts = pd.Series(sentiments).value_counts()
+    # Plot emotions in pie chart
+    ax1.pie(emotions_frequency, labels=emotions_labels, autopct='%1.2f%%')
+    ax1.set_title('Emotions Distribution')
 
-    # # Plot emotions in pie chart
-    # plt.pie(sentiment_counts) # labels=counts.keys
-    # plt.show()
+    # Obtain number of occurences of each sentiment
+    sentiments_labels, sentiments_frequency = np.unique(sentiments, return_counts=True)
+
+    # Plot sentiments in pie chart
+    ax2.pie(sentiments_frequency, labels=sentiments_labels, autopct='%1.2f%%')
+    ax2.set_title('Sentiments Distribution')
+    plt.savefig(fname="post_distribution.pdf")
+    '''
 
     # Define vectorizer
     vectorizer = CountVectorizer(analyzer='word')
@@ -58,16 +74,3 @@ with open(emotions_dataset, 'r') as file:
     clf.fit(x_train, y_train)
     print(clf.predict(x_test[2:3]))
     print(y_test[2:3])
-
-
-
-
-
-# TODO: 
-# def plot_data(data):
-#     # Obtain number of occurences of each emotion
-#     sentiment_counts = pd.Series(sentiments).value_counts()
-
-#     # Plot emotions in pie chart
-#     plt.pie(sentiment_counts) # labels=counts.keys
-#     plt.show()
