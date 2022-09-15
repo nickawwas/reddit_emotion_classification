@@ -11,14 +11,13 @@ from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 
 
-def plot_distribution(np_data, data_type):
+def plot_distribution(np_data, plt_axis, data_type):
     # Obtain number of occurences of each emotion or sentiment
     labels, frequency = np.unique(np_data, return_counts=True)
 
     # Plot emotions or sentiments in pie chart
-    plt.pie(frequency, labels=labels, autopct='%1.2f%%')
-    plt.title(f"{data_type} Distribution")
-    plt.savefig(fname=f"{data_type}_distribution.pdf")
+    plt_axis.pie(frequency, labels=labels, autopct='%1.2f%%')
+    plt_axis.set_title(f"{data_type} Distribution")
 
     return labels
 
@@ -36,27 +35,15 @@ with open(emotions_dataset, 'r') as file:
     emotions = np_data[:, 1]
     sentiments = np_data[:, 2]
 
-    '''
     # Create 1 figure with 2 subplots
     _, (ax1, ax2) = plt.subplots(1, 2)
 
-    # Obtain number of occurences of each emotion
-    emotions_labels, emotions_frequency = np.unique(emotions, return_counts=True)
+    emotions_labels = plot_distribution(emotions, ax1, "Emotions")
+    sentiments_labels = plot_distribution(sentiments, ax2, "Sentiments")
+    plt.show()
+    # plt.savefig(fname="post_distribution.pdf")
 
-    # Plot emotions in pie chart
-    ax1.pie(emotions_frequency, labels=emotions_labels, autopct='%1.2f%%')
-    ax1.set_title('Emotions Distribution')
-
-    # Obtain number of occurences of each sentiment
-    sentiments_labels, sentiments_frequency = np.unique(sentiments, return_counts=True)
-
-    # Plot sentiments in pie chart
-    ax2.pie(sentiments_frequency, labels=sentiments_labels, autopct='%1.2f%%')
-    ax2.set_title('Sentiments Distribution')
-    plt.savefig(fname="post_distribution.pdf")
-    '''
-
-    # Define vectorizer
+    # Create count vectorizer and Fit/transform comments to obtain single feature vector
     vectorizer = CountVectorizer(analyzer='word')
     vector = vectorizer.fit_transform(comments)
 
@@ -65,8 +52,9 @@ with open(emotions_dataset, 'r') as file:
     frequency = vector.toarray().sum(axis=0)
     print(tokens, frequency)
 
+    # TODO: What do we split and how do we split it...
     # Split dataset into training and testing split
-    x_train, x_test, y_train, y_test = train_test_split(tokens, frequency, train_size=0.8, test_size=0.2, random_state=40)
+    x_train, x_test, y_train, y_test = train_test_split(comments, emotions, train_size=0.8, test_size=0.2)
     print(x_train, x_test, y_train, y_test)
 
     # Train and test Multinomial Naive Bayes Classifier
