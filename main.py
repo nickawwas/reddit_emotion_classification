@@ -34,31 +34,72 @@ with open(emotions_dataset, 'r') as file:
     comments = np_data[:, 0]
     emotions = np_data[:, 1]
     sentiments = np_data[:, 2]
+    buckets = np_data[:, -2:]
 
     # Create 1 figure with 2 subplots
     _, (ax1, ax2) = plt.subplots(1, 2)
 
     emotions_labels = plot_distribution(emotions, ax1, "Emotions")
     sentiments_labels = plot_distribution(sentiments, ax2, "Sentiments")
-    plt.show()
     # plt.savefig(fname="post_distribution.pdf")
 
-    # Create count vectorizer and Fit/transform comments to obtain single feature vector
-    vectorizer = CountVectorizer(analyzer='word')
+    # Create count vectorizer and learn vocabulary from comments to obtain single feature vector
+    vectorizer = CountVectorizer()
     vector = vectorizer.fit_transform(comments)
 
     # Obtain words and frequency
     tokens = vectorizer.get_feature_names_out()
     frequency = vector.toarray().sum(axis=0)
-    print(tokens, frequency)
+    print(f"Vocabulary Size: {len(tokens)}")
 
-    # TODO: What do we split and how do we split it...
     # Split dataset into training and testing split
-    x_train, x_test, y_train, y_test = train_test_split(comments, emotions, train_size=0.8, test_size=0.2)
-    print(x_train, x_test, y_train, y_test)
+    x_train, x_test, y_train, y_test = train_test_split(comments, buckets, train_size=0.8, test_size=0.2)
+    # print("Training Comments: ", x_train)
+    # print("Testing Comments: ", x_test)
+    # print("Training Emotions: ", y_train)
+    # print("Testing Emotions: ", y_test)
 
+    #TODO: Find issue with training and testing data causing classifier to fail...
+    '''
     # Train and test Multinomial Naive Bayes Classifier
     clf = MultinomialNB()
     clf.fit(x_train, y_train)
-    print(clf.predict(x_test[2:3]))
-    print(y_test[2:3])
+    print(clf.predict(x_test))
+    print(y_test)
+
+    # Train and test Decision Tree Classifier
+    clf = DecisionTreeClassifier()
+    clf.fit(x_train, y_train)
+
+
+    # Train and test Multi-Layered Perceptron Classifier
+    clf = MLPClassifier()
+    clf.fit(x_train, y_train)
+
+
+    # Train and test better perfomring MNB Classifier
+    clf = GridSearchCV(
+        MultinomialNB(), 
+        #...
+    )
+    clf.fit(x_train, y_train)
+
+    # Train and test better perfomring DT Classifier
+    # TODO: 2 different values for max_depth, 3 different values for min_samples_split
+    clf = GridSearchCV(
+        DecisionTreeClassifier(), 
+        #...
+    )
+    clf.fit(x_train, y_train)
+
+
+    # Train and test better perfomring MLP Classifier
+    # TODO: sigmoid, tanh, relu + identity for activation, 2 network architecture and Adam + stochastic gradient descent for solver
+    clf = GridSearchCV(
+        MLPClassifier(), 
+        #...
+    )
+    clf.fit(x_train, y_train)
+    '''
+
+    # Save classification results for each in performance folder
