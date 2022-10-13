@@ -18,7 +18,6 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 # EMOTIONS_DATASET = 'fakeemotions.json'
 EMOTIONS_DATASET = 'goemotions.json'
-MODEL_PATH = '/models'
 NAIVE_BAYES='naive_bayes'
 DECISION_TREE='decision_tree'
 PERCEPTRON='perceptron'
@@ -109,10 +108,10 @@ def report_results(clf, classifier_type: str, feature_type: str, comments, featu
         performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n\n')
 
 def export_model(clf, classifier_type: str, feature_type: str):
-    if not os.path.exists(f'{MODEL_PATH}/{classifier_type}'):
-        os.mkdir(f'{MODEL_PATH}/{classifier_type}')
+    if not os.path.exists(f'models/{classifier_type}'):
+        os.mkdir(f'models/{classifier_type}')
     
-    pickle.dump(clf, open(f'{MODEL_PATH}/{classifier_type}/{classifier_type}_{feature_type}.sav'))
+    pickle.dump(clf, open(f'models/{classifier_type}/{classifier_type}_{feature_type}.sav', 'wb'))
 
 if __name__ == '__main__':
     data = None
