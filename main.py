@@ -82,6 +82,9 @@ def top_mnb_classifier():
 def top_decision_tree_classifier():
     return
 
+def top_perceptron_classifier():
+    return
+
 def report_results(clf, classfier_type: str, feature_type: str, comments, feature):
     # print(f'{classfier_type} {feature_type} probability eastimate: {clf.predict_proba(comments_test)}')
     print(f'{classfier_type} {feature_type} Prediction: {clf.predict(comments)}')
