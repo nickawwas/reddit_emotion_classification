@@ -2,6 +2,7 @@
 
 from dataclasses import dataclass
 import json
+from Spinner import Spinner
 import numpy as np
 from matplotlib import pyplot as plt
 
@@ -71,7 +72,7 @@ def decision_tree_classifier(comments, feature):
     return clf
 
 def perceptron_classifier(comments, feature):
-    clf = MLPClassifier(random_state=1, max_iter=300)
+    clf = MLPClassifier(random_state=1, max_iter=100)
     clf.fit(comments, feature)
     return clf
 
@@ -80,6 +81,12 @@ def top_mnb_classifier():
 
 def top_decision_tree_classifier():
     return
+
+def report_results(clf, classfier_type: str, feature_type: str, comments, feature):
+    # print(f'{classfier_type} {feature_type} probability eastimate: {clf.predict_proba(comments_test)}')
+    print(f'{classfier_type} {feature_type} Prediction: {clf.predict(comments)}')
+    print(f'{classfier_type} {feature_type} Test: {feature}')
+    print(f'Score: {clf.score(comments, feature)}')
 
 if __name__ == '__main__':
     data = None
@@ -107,40 +114,37 @@ if __name__ == '__main__':
     comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = train_test_split(comments_vector, np_emotions, np_sentiments, train_size=0.8, test_size=0.2)
 
     # Multinominal Naive Bayes classification for emotions:
-    mnb_emotions = naive_bayers_classifier(comments_train, emotions_train)
-    print(f'MNB Emotions Prediction: {mnb_emotions.predict(comments_test)}')
-    print(f'MNB Emotions Test: {emotions_test}')
-    print(f'Score: {mnb_emotions.score(comments_test, emotions_test)}')
 
-    # Multinominal Naive Bayes classification for sentiments:
-    mnb_sentiments = naive_bayers_classifier(comments_train, sentiments_train)
-    print(f'MNB Sentiments Prediction: {mnb_sentiments.predict(comments_test)}')
-    print(f'MNB Sentiment Test: {sentiments_test}')
-    print(f'Score: {mnb_sentiments.score(comments_test, sentiments_test)}')
+    # IMPORTANT: Spinner class is not custom (using it to verify nothing is hanging, we can replace with a custom one later)
+    # TODO: Replace or remove Spinner 
+    with Spinner():
+        mnb_emotions = naive_bayers_classifier(comments_train, emotions_train)
+    report_results(mnb_emotions, 'MNB', 'Emotions', comments_test, emotions_test)
 
-    # Decision Tree classification for emotions:
-    dct_emotions = decision_tree_classifier(comments_train, emotions_train)
-    print(f'DCT Emotions Prediction: {dct_emotions.predict(comments_test)}')
-    print(f'DCT Emotions Test: {emotions_test}')
-    print(f'Score: {dct_emotions.score(comments_test, emotions_test)}')
+    with Spinner():
+        # Multinominal Naive Bayes classification for sentiments:
+        mnb_sentiments = naive_bayers_classifier(comments_train, sentiments_train)
+    report_results(mnb_sentiments, 'MNB', 'Sentiments', comments_test, emotions_test)
 
-    # Decision Tree classification for sentiments:
-    dct_sentiments = decision_tree_classifier(comments_train, sentiments_train)
-    print(f'DCT Sentiments Prediction: {dct_sentiments.predict(comments_test)}')
-    print(f'DCT Sentiment Test: {sentiments_test}')
-    print(f'Score: {dct_sentiments.score(comments_test, sentiments_test)}')
- 
-    mlp_emotions = perceptron_classifier(comments_train, emotions_train)
-    print(mlp_emotions.predict_proba(comments_test))
-    print(f'MLP Emototions Prediction: {mlp_emotions.predict(comments_test)}')
-    print(f'MLP Emotions Test: {emotions_test}')
-    print(f'Score: {mlp_emotions.score(comments_test, emotions_test)}')
+    with Spinner():
+        # Decision Tree classification for emotions:
+        dct_emotions = decision_tree_classifier(comments_train, emotions_train)
+    report_results(dct_emotions, 'DCT', 'Emotions', comments_test, emotions_test)
 
-    mlp_sentiments = perceptron_classifier(comments_train, sentiments_train)
-    print(mlp_sentiments.predict_proba(comments_test))
-    print(f'MLP Sentiment Prediction: {mlp_sentiments.predict(comments_test)}')
-    print(f'MLP Sentiment Test: {sentiments_test}')
-    print(f'Score: {mlp_sentiments.score(comments_test, sentiments_test)}')
+    with Spinner():
+        # Decision Tree classification for sentiments:
+        dct_sentiments = decision_tree_classifier(comments_train, sentiments_train)
+    report_results(dct_sentiments, 'DCT', 'Sentiments', comments_test, emotions_test)
+    
+    with Spinner():
+        # Perceptron classification for emotions:
+        mlp_emotions = perceptron_classifier(comments_train, emotions_train)
+    report_results(mlp_emotions, 'MLP', 'Emotions', comments_test, emotions_test)
+
+    with Spinner():
+        # Perceptron classification for sentiments:
+        mlp_sentiments = perceptron_classifier(comments_train, sentiments_train)
+    report_results(mlp_sentiments, 'MLP', 'Sentiments', comments_test, emotions_test)
 
     #TODO: GridSearchCV
     #TODO: Top-MLP
