@@ -26,10 +26,10 @@ pip install -r requirements.txt
 ```
 
 ## Running program to create models
-(Note this will take several hours to days to run)
+> Note this will take several hours to days to run
 Run the command below:
 ```
-python main.py
+python create_models.py
 ```
 
 This will create the charts associated with the dataset (barchart and piechart)
@@ -39,11 +39,11 @@ will have their models stored, for both emotions and sentiments. These can be us
 later to load, avoiding the need to rebuild the models
 
 
-## Running program with prebuilt models
+## Running program with pre-built models
 
 Run the command below:
 ```
-python pre-built {model_name} {type}
+python pre_built.py {model_name} {type}
 ```
 
 List of entries for `model_name`:

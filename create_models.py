@@ -3,20 +3,18 @@
 import json
 import os
 import pickle
-from Spinner import Spinner
 import numpy as np
-from matplotlib import pyplot as plt
+import graphviz 
 
+from Spinner import Spinner #TODO: Remove or change to custom 
+from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn import tree
-import graphviz 
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, classification_report
 
-# EMOTIONS_DATASET = 'fakeemotions.json'
 EMOTIONS_DATASET = 'goemotions.json'
 NAIVE_BAYES = 'naive_bayes'
 DECISION_TREE = 'decision_tree'
@@ -122,29 +120,31 @@ def report_results(clf, classifier_type: str, feature_type: str, comments, featu
 
     # create performance file entry
     with open('performance.txt', 'a') as performance:
-        performance.writelines(f'\n{classifier_type}- classifying {feature_type}: Score {score}\n')
-        performance.writelines('Confusion Matrix:\n')
-        performance.writelines(np.array2string(confusion_matrix(feature, prediction)))        
-        performance.writelines('\n\nClassification Report:\n')
-        performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n\n')
+        performance.writelines(f'\n{classifier_type} - classifying {feature_type}: \n\nParams: {clf} \n\nScore {score}\n')
+        performance.writelines('\nConfusion Matrix:\n')
+        performance.writelines(f'{np.array2string(confusion_matrix(feature, prediction))}\n')        
+        performance.writelines('\nClassification Report:\n')
+        performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n')
         
         if is_gs:
-            performance.writelines(f'Best parameters: {clf.best_params_}\n\n')
+            performance.writelines(f'Best parameters: {clf.best_params_}\n')
             performance.writelines(f'Best score: {clf.best_score_}\n\n')
 
 def export_model(clf, classifier_type: str, feature_type: str):
     if not os.path.exists(f'models/{classifier_type}'):
         os.mkdir(f'models/{classifier_type}')
     
-    pickle.dump(clf, open(f'models/{classifier_type}/{classifier_type}_{feature_type}.sav', 'wb'))
+    pickle.dump(clf, open(f'models/{classifier_type}/{classifier_type}_{feature_type}.model', 'wb'))
 
 if __name__ == '__main__':
     data = None
     with open(EMOTIONS_DATASET, 'r') as file:
         # Read json data
         data = json.load(file)
-        np_data = np.array(data)
 
+    np_data = np.array(data)
+
+    # Split data into separate lists
     np_comments = np_data[:, 0]
     np_emotions = np_data[:, 1]
     np_sentiments = np_data[:, 2]
@@ -159,8 +159,9 @@ if __name__ == '__main__':
     # Obtain words and frequency
     tokens = vectorizer.get_feature_names_out()
 
+    # Add vocabulary size to the performance sheet
     with open('performance.txt', 'a') as performance:
-        performance.write(f'Vocabulary size: {len(tokens)}')
+        performance.write(f'Vocabulary size: {len(tokens)}\n')
     
     # Split dataset into training and testing split
     comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = train_test_split(comments_vector, np_emotions, np_sentiments, train_size=0.8, test_size=0.2)
