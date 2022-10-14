@@ -18,9 +18,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 # EMOTIONS_DATASET = 'fakeemotions.json'
 EMOTIONS_DATASET = 'goemotions.json'
-NAIVE_BAYES='naive_bayes'
-DECISION_TREE='decision_tree'
-PERCEPTRON='perceptron'
+NAIVE_BAYES = 'naive_bayes'
+DECISION_TREE = 'decision_tree'
+PERCEPTRON = 'perceptron'
 
 def bar_plot_distribution(np_data, plt_axis, data_type):
     # Obtain number of occurences of each emotion or sentiment
@@ -138,18 +138,21 @@ if __name__ == '__main__':
     # Split dataset into training and testing split
     comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = train_test_split(comments_vector, np_emotions, np_sentiments, train_size=0.8, test_size=0.2)
 
-    # Multinominal Naive Bayes classification for emotions:
-
     # IMPORTANT: Spinner class is not custom (using it to verify nothing is hanging, we can replace with a custom one later)
     # TODO: Replace or remove Spinner 
     with Spinner():
+        # Multinominal Naive Bayes classification for emotions (training):
         mnb_emotions = naive_bayes_classifier(comments_train, emotions_train)
+
+    # Testing of Multinominal Naive Bayes classification for emotions
     report_results(mnb_emotions, 'Naive Bayes Classifier', 'Emotions', comments_test, emotions_test)
     export_model(mnb_emotions, NAIVE_BAYES, 'emotions')
 
     with Spinner():
-        # Multinominal Naive Bayes classification for sentiments:
+        # Multinominal Naive Bayes classification for sentiments (training):
         mnb_sentiments = naive_bayes_classifier(comments_train, sentiments_train)
+    
+    # Testing of Multinominal Naive Bayes classification for sentiments
     report_results(mnb_sentiments, 'Naive Bayes Classifier', 'Sentiments', comments_test, sentiments_test)
     export_model(mnb_sentiments, NAIVE_BAYES, 'sentiments')
 
