@@ -18,9 +18,9 @@ from sklearn.metrics import confusion_matrix, classification_report
 
 # EMOTIONS_DATASET = 'fakeemotions.json'
 EMOTIONS_DATASET = 'goemotions.json'
-NAIVE_BAYES='naive_bayes'
-DECISION_TREE='decision_tree'
-PERCEPTRON='perceptron'
+NAIVE_BAYES = 'naive_bayes'
+DECISION_TREE = 'decision_tree'
+PERCEPTRON = 'perceptron'
 
 def bar_plot_distribution(np_data, plt_axis, data_type):
     # Obtain number of occurences of each emotion or sentiment
