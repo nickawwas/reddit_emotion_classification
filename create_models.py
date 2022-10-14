@@ -107,7 +107,7 @@ def top_perceptron_classifier(comments, feature):
         'activation': ['softmax', 'tanh', 'relu', 'identity'],
         'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
         'max_iter': [5]
-    }   
+    }
     clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
     clf.fit(comments, feature)
     return clf
