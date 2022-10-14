@@ -8,7 +8,7 @@ import numpy as np
 from matplotlib import pyplot as plt
 
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.model_selection import train_test_split
+from sklearn.model_selection import GridSearchCV, train_test_split
 from sklearn import tree
 import graphviz 
 from sklearn.naive_bayes import MultinomialNB
@@ -35,7 +35,7 @@ def bar_plot_distribution(np_data, plt_axis, data_type):
 
     return labels
 
-def plot_distribution(np_data, plt_axis, data_type):
+def pie_plot_distribution(np_data, plt_axis, data_type):
     # Obtain number of occurences of each emotion or sentiment
     labels, frequency = np.unique(np_data, return_counts=True)
 
@@ -45,14 +45,18 @@ def plot_distribution(np_data, plt_axis, data_type):
 
     return labels
 
-def plot_data(emotions, sentiments):
+def plot_data(emotions, sentiments, style: str):
     # Create 1 figure with 2 subplots
     _, (ax1, ax2) = plt.subplots(1, 2, layout="constrained")
     
-    bar_plot_distribution(emotions, ax1, "Emotions")
-    bar_plot_distribution(sentiments, ax2, "Sentiments")
-
-    plt.savefig(fname="post_distribution.pdf")
+    if style == 'bar':
+        bar_plot_distribution(emotions, ax1, "Emotions")
+        bar_plot_distribution(sentiments, ax2, "Sentiments")
+        plt.savefig(fname="post_distribution_barchart.pdf")
+    else:
+        pie_plot_distribution(emotions, ax1, "Emotions")
+        pie_plot_distribution(sentiments, ax2, "Sentiments")
+        plt.savefig(fname="post_distribution_piechart.pdf")
 
 def render_graph(dtc):
     # dot_data = tree.export_graphviz(dtc, out_file=None,
@@ -77,21 +81,38 @@ def decision_tree_classifier(comments, feature):
     return clf
 
 def perceptron_classifier(comments, feature):
-    clf = MLPClassifier(random_state=1, max_iter=100)
+    clf = MLPClassifier(random_state=1, max_iter=10)
     clf.fit(comments, feature)
     return clf
 
-def top_mnb_classifier():
-    return
+def top_mnb_classifier(comments, feature):
+    clf = GridSearchCV(MultinomialNB(), param_grid={'alpha': [0.01, 0.1, 0.5, 1.0]}, n_jobs=-1)
+    clf.fit(comments, feature)
+    return clf
 
-def top_decision_tree_classifier():
-    return
+def top_decision_tree_classifier(comments, feature):
+    params = {
+        'criterion': ['gini', 'entropy'],
+        'max_depth': [2, 8],
+        'min_samples_split': [2, 3, 4]
+    }
+    clf = GridSearchCV(DecisionTreeClassifier(), param_grid=params, n_jobs=-1)
+    clf.fit(comments, feature)
+    return clf
 
-def top_perceptron_classifier():
-    return
+def top_perceptron_classifier(comments, feature):
+    params = {
+        'solver': ['adam', 'sgd'],
+        'activation': ['softmax', 'tanh', 'relu', 'identity'],
+        'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
+        'max_iter': [5],
+        'random_state': [1]
+    }   
+    clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
+    clf.fit(comments, feature)
+    return clf
 
 def report_results(clf, classifier_type: str, feature_type: str, comments, feature):
-    # print(f'{classfier_type} {feature_type} probability eastimate: {clf.predict_proba(comments_test)}')
     prediction = clf.predict(comments)
     score = clf.score(comments, feature)
 
@@ -125,89 +146,104 @@ if __name__ == '__main__':
     np_sentiments = np_data[:, 2]
 
     # Plot emotion and sentiment data
-    plot_data(np_emotions, np_sentiments)
-
+    plot_data(np_emotions, np_sentiments, 'bar')
+    
     # Create count vectorizer and learn vocabulary from comments to obtain single feature vector
     vectorizer = CountVectorizer()
     comments_vector = vectorizer.fit_transform(np_comments)
 
     # Obtain words and frequency
-    tokens = vectorizer.get_feature_names_out()    
-    print(f"Vocabulary Size: {len(tokens)}")
+    tokens = vectorizer.get_feature_names_out()
+
+    with open('performance.txt', 'a') as performance:
+        performance.write(f'Vocabulary size: {len(tokens)}')
     
     # Split dataset into training and testing split
     comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = train_test_split(comments_vector, np_emotions, np_sentiments, train_size=0.8, test_size=0.2)
 
     # IMPORTANT: Spinner class is not custom (using it to verify nothing is hanging, we can replace with a custom one later)
     # TODO: Replace or remove Spinner 
+    
+    print('Multinominal Naive Bayes Classification For Emotions')
     with Spinner():
-        # Multinominal Naive Bayes classification for emotions (training):
         mnb_emotions = naive_bayes_classifier(comments_train, emotions_train)
-
-    # Testing of Multinominal Naive Bayes classification for emotions
     report_results(mnb_emotions, 'Naive Bayes Classifier', 'Emotions', comments_test, emotions_test)
     export_model(mnb_emotions, NAIVE_BAYES, 'emotions')
 
+    print('Multinominal Naive Bayes Classification For Sentiments')
     with Spinner():
-        # Multinominal Naive Bayes classification for sentiments (training):
         mnb_sentiments = naive_bayes_classifier(comments_train, sentiments_train)
-    
-    # Testing of Multinominal Naive Bayes classification for sentiments
     report_results(mnb_sentiments, 'Naive Bayes Classifier', 'Sentiments', comments_test, sentiments_test)
     export_model(mnb_sentiments, NAIVE_BAYES, 'sentiments')
 
+    print('Decision Tree classification For Emotions')
     with Spinner():
-        # Decision Tree classification for emotions:
         dct_emotions = decision_tree_classifier(comments_train, emotions_train)
     report_results(dct_emotions, 'Decision Tree Classifier', 'Emotions', comments_test, emotions_test)
     export_model(dct_emotions, DECISION_TREE, 'emotions')
 
+    print('Decision Tree classification For Sentiments')
     with Spinner():
-        # Decision Tree classification for sentiments:
         dct_sentiments = decision_tree_classifier(comments_train, sentiments_train)
     report_results(dct_sentiments, 'Decision Tree Classifier', 'Sentiments', comments_test, sentiments_test)
     export_model(dct_sentiments, DECISION_TREE, 'sentiments')
 
-    # with Spinner():
-    #     # Perceptron classification for emotions:
-    #     mlp_emotions = perceptron_classifier(comments_train, emotions_train)
-    # report_results(mlp_emotions, 'MLP', 'Emotions', comments_test, emotions_test)
+    print('Perceptron classification For Emotions')
+    with Spinner():
+        mlp_emotions = perceptron_classifier(comments_train, emotions_train)
+    report_results(mlp_emotions, 'Perceptron', 'Emotions', comments_test, emotions_test)    
+    export_model(mlp_emotions, PERCEPTRON, 'emotions')
 
-    # with Spinner():
-    #     # Perceptron classification for sentiments:
-    #     mlp_sentiments = perceptron_classifier(comments_train, sentiments_train)
-    # report_results(mlp_sentiments, 'MLP', 'Sentiments', comments_test, sentiments_test)
+    print('Perceptron classification For Sentiments')
+    with Spinner():
+        mlp_sentiments = perceptron_classifier(comments_train, sentiments_train)
+    report_results(mlp_sentiments, 'Perceptron', 'Sentiments', comments_test, sentiments_test)
+    export_model(mlp_sentiments, PERCEPTRON, 'sentiments')
 
-    #TODO: GridSearchCV
-    #TODO: Top-MLP
+    print('GridSearch Multinominal Naive Bayes Classification For Emotions')
+    with Spinner():
+        gs_mnb_emotions = top_mnb_classifier(comments_train, emotions_train)
+    report_results(gs_mnb_emotions, 'GridSearch_MNB', 'Emotions', comments_test, emotions_test)
+    export_model(gs_mnb_emotions, 'GridSearch_MNB', 'emotions')
+    print(gs_mnb_emotions.best_params_)
+    print(gs_mnb_emotions.best_score_)
 
-    '''
+    print('GridSearch Multinominal Naive Bayes Classification For Sentiments')
+    with Spinner():
+        gs_mnb_sentiments = top_mnb_classifier(comments_train, sentiments_train)
+    report_results(gs_mnb_sentiments, 'GridSearch_MNB', 'Sentiments', comments_test, sentiments_test)
+    export_model(gs_mnb_sentiments, 'GridSearch_MNB', 'sentiments')
+    print(gs_mnb_sentiments.best_params_)
+    print(gs_mnb_sentiments.best_score_)
 
+    print('GridSearch Decision Tree classification For Emotions')
+    with Spinner():
+        gs_dct_emotions = top_decision_tree_classifier(comments_train, emotions_train)
+    report_results(gs_dct_emotions, 'GridSearch_DCT', 'Emotions', comments_test, emotions_test)
+    export_model(gs_dct_emotions, 'GridSearch_DCT', 'emotions')
+    print(gs_dct_emotions.best_params_)
+    print(gs_dct_emotions.best_score_)
 
-    # Train and test better perfomring MNB Classifier
-    clf = GridSearchCV(
-        MultinomialNB(), 
-        #...
-    )
-    clf.fit(x_train, y_train)
+    print('GridSearch Decision Tree classification For Sentiments')
+    with Spinner():
+        gs_dct_sentiments = top_decision_tree_classifier(comments_train, sentiments_train)
+    report_results(gs_dct_sentiments, 'GridSearch_DCT', 'Sentiments', comments_test, sentiments_test)
+    export_model(gs_dct_sentiments, 'GridSearch_DCT', 'sentiments')
+    print(gs_dct_sentiments.best_params_)
+    print(gs_dct_sentiments.best_score_)
 
-    # Train and test better perfomring DT Classifier
-    # TODO: 2 different values for max_depth, 3 different values for min_samples_split
-    clf = GridSearchCV(
-        DecisionTreeClassifier(), 
-        #...
-    )
-    clf.fit(x_train, y_train)
+    print('GridSearch Perceptron classification For Emotions')
+    with Spinner():
+        gs_prceptron_emotions = top_perceptron_classifier(comments_train, emotions_train)
+    report_results(gs_prceptron_emotions, 'GridSearch_Perceptron', 'Emotions', comments_test, emotions_test)
+    export_model(gs_prceptron_emotions, 'GridSearch_Perceptron', 'emotions')
+    print(gs_prceptron_emotions.best_params_)
+    print(gs_prceptron_emotions.best_score_)
 
-
-    # Train and test better perfomring MLP Classifier
-    # TODO: sigmoid, tanh, relu + identity for activation, 2 network architecture and Adam + stochastic gradient descent for solver
-    clf = GridSearchCV(
-        MLPClassifier(), 
-        #...
-    )
-    clf.fit(x_train, y_train)
-    '''
-
-    # Save classification results for each in performance folder
-
+    print('GridSearch Perceptron classification For Sentiments')
+    with Spinner():
+        gs_prceptron_sentiments = top_perceptron_classifier(comments_train, sentiments_train)
+    report_results(gs_prceptron_sentiments, 'GridSearch_Perceptron', 'Sentiments', comments_test, sentiments_test)
+    export_model(gs_prceptron_sentiments, 'GridSearch_Perceptron', 'sentiments')
+    print(gs_prceptron_sentiments.best_params_)
+    print(gs_prceptron_sentiments.best_score_)
