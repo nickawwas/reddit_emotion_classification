@@ -1,5 +1,3 @@
-# pip3 install numpy matplotlib scikit-learn gensim nltk 
-
 import json
 import os
 import pickle
