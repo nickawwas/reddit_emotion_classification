@@ -48,11 +48,11 @@ def plot_data(emotions, sentiments, style: str):
     if style == 'bar':
         bar_plot_distribution(emotions, ax1, "Emotions")
         bar_plot_distribution(sentiments, ax2, "Sentiments")
-        plt.savefig(fname="post_distribution_barchart.pdf")
+        plt.savefig(fname="charts/post_distribution_barchart.pdf")
     else:
         pie_plot_distribution(emotions, ax1, "Emotions")
         pie_plot_distribution(sentiments, ax2, "Sentiments")
-        plt.savefig(fname="post_distribution_piechart.pdf")
+        plt.savefig(fname="charts/post_distribution_piechart.pdf")
 
 def render_graph(dtc):
     # dot_data = tree.export_graphviz(dtc, out_file=None,
