@@ -1,5 +1,3 @@
-from mmap import mmap
-import gensim
 import nltk
 import numpy as np
 import os
@@ -9,7 +7,6 @@ from gensim.models import KeyedVectors
 import gensim.downloader as loader
 from nltk.tokenize import RegexpTokenizer
 from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.feature_extraction.text import CountVectorizer
 from sklearn.neural_network import MLPClassifier
 
 nltk.download('punkt')
@@ -27,8 +24,8 @@ def top_perceptron_classifier(comments, feature):
     params = {
         'solver': ['adam', 'sgd'],
         'activation': ['softmax', 'tanh', 'relu', 'identity'],
-        'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
-        'max_iter': [5]
+        'hidden_layer_sizes': [(50, 50, 50), (20, 40, 60)],
+        'max_iter': [100]
     }
     clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
     clf.fit(comments, feature)
@@ -84,8 +81,12 @@ if __name__ == '__main__':
     print(prediction)
     print(emotions_test)
     
-    # w2v_top_mlp = top_perceptron_classifier(comments_train, sentiments_train)
-    
+    w2v_top_mlp = top_perceptron_classifier(comments_train, sentiments_train)
+    print(w2v_top_mlp)
+    print(w2v_top_mlp.score(comments_test, sentiments_test))
+    prediction = w2v_top_mlp.predict(comments_test)
+    print(prediction)
+    print(sentiments_test)
 
     exit()
 
