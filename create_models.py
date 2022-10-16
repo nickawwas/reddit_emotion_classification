@@ -77,8 +77,7 @@ def decision_tree_classifier(comments, feature):
     return clf
 
 def perceptron_classifier(comments, feature):
-    # TODO: Remove max iter, default = 200
-    clf = MLPClassifier(max_iter=10)
+    clf = MLPClassifier(max_iter=50)
     clf.fit(comments, feature)
     return clf
 
@@ -99,12 +98,11 @@ def top_decision_tree_classifier(comments, feature):
     return clf
 
 def top_perceptron_classifier(comments, feature):
-    # TODO: Remove max iter, default = 200
     params = {
         'solver': ['adam', 'sgd'],
-        'activation': ['softmax', 'tanh', 'relu', 'identity'],
+        'activation': ['logistic', 'tanh', 'relu', 'identity'],
         'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
-        'max_iter': [5]
+        'max_iter': [50]
     }
     clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
     clf.fit(comments, feature)
@@ -166,7 +164,6 @@ if __name__ == '__main__':
 
     # IMPORTANT: Spinner class is not custom (using it to verify nothing is hanging, we can replace with a custom one later)
     # TODO: Replace or remove Spinner 
-    
     print('Multinominal Naive Bayes Classification For Emotions')
     with Spinner():
         mnb_emotions = naive_bayes_classifier(comments_train, emotions_train)
