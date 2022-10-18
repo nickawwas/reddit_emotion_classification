@@ -73,7 +73,7 @@ if __name__ == '__main__':
     
     params = {
         'solver': ['adam', 'sgd'],
-        'activation': ['softmax', 'tanh', 'relu', 'identity'],
+        'activation': ['logistic', 'tanh', 'relu', 'identity'],
         'hidden_layer_sizes': [(50, 50, 50), (20, 40, 60)],
         'max_iter': [50, 75]
     }

@@ -441,3 +441,34 @@ disappointment       0.15      0.00      0.00      3752
 Best parameters: {'activation': 'relu', 'hidden_layer_sizes': (50, 50, 50), 'max_iter': 75, 'solver': 'adam'}
 Best score: 0.35884117408992766
 
+
+GridSearch_MLP - classifying Sentiments: 
+
+Params: GridSearchCV(estimator=MLPClassifier(), n_jobs=-1,
+             param_grid={'activation': ['softmax', 'tanh', 'relu', 'identity'],
+                         'hidden_layer_sizes': [(50, 50, 50), (20, 40, 60)],
+                         'max_iter': [50, 75], 'solver': ['adam', 'sgd']}) 
+
+Score 0.49099295733659276
+
+Confusion Matrix:
+[[ 1086  2375  8152  3590]
+ [  514 12435 12092  5699]
+ [  759  6428 25485 11625]
+ [  595  4428 13705 28480]]
+
+Classification Report:
+              precision    recall  f1-score   support
+
+   ambiguous       0.37      0.07      0.12     15203
+    negative       0.48      0.40      0.44     30740
+     neutral       0.43      0.58      0.49     44297
+    positive       0.58      0.60      0.59     47208
+
+    accuracy                           0.49    137448
+   macro avg       0.46      0.41      0.41    137448
+weighted avg       0.49      0.49      0.47    137448
+
+Best parameters: {'activation': 'relu', 'hidden_layer_sizes': (50, 50, 50), 'max_iter': 75, 'solver': 'adam'}
+Best score: 0.46419738198530186
+
