@@ -22,11 +22,11 @@ if __name__ == '__main__':
         performance.write(f'Vocabulary size: {len(tokens)}\n')
     
     # Split dataset into training and testing split
-    comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(comments_vector, np_emotions, np_sentiments, 0.8, 0.2, 0)
+    comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(comments_vector, np_emotions, np_sentiments, 0.8)
 
     print('Multinominal Naive Bayes Classification For Emotions')
     models.naive_bayes_classifier(comments_train, emotions_train, 'Emotions')
-    
+
     print('Multinominal Naive Bayes Classification For Sentiments')
     models.naive_bayes_classifier(comments_train, sentiments_train, 'Sentiments')
 
@@ -47,15 +47,26 @@ if __name__ == '__main__':
 
     print('GridSearch Multinominal Naive Bayes Classification For Sentiments')
     models.top_mnb_classifier(comments_train, sentiments_train, 'Sentiments')
-
+    
+    params = {
+        'criterion': ['gini', 'entropy'],
+        'max_depth': [2, 8],
+        'min_samples_split': [2, 3, 4]
+    }
     print('GridSearch Decision Tree classification For Emotions')
-    models.top_decision_tree_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_decision_tree_classifier(comments_train, emotions_train, params, 'Emotions')
 
     print('GridSearch Decision Tree classification For Sentiments')
-    models.top_decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
-
+    models.top_decision_tree_classifier(comments_train, sentiments_train, params, 'Sentiments')
+    
+    params = {
+        'solver': ['adam', 'sgd'],
+        'activation': ['logistic', 'tanh', 'relu', 'identity'],
+        'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
+        'max_iter': [50]
+    }
     print('GridSearch Perceptron classification For Emotions')
-    models.top_perceptron_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_perceptron_classifier(comments_train, emotions_train, params, 'Emotions')
 
     print('GridSearch Perceptron classification For Sentiments')
-    models.top_perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.top_perceptron_classifier(comments_train, sentiments_train, params, 'Sentiments')

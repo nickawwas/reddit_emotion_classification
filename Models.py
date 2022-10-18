@@ -96,7 +96,7 @@ class Models:
 
     def top_mnb_classifier(self, comments, feature, type: str):
         # n_jobs param value -1: allows utilization of maximum processors
-        clf = GridSearchCV(MultinomialNB(), param_grid={'alpha': [0.01, 0.1, 0.5, 1.0]}, n_jobs=-1)
+        clf = GridSearchCV(MultinomialNB(), param_grid={'alpha': [0, 0.1, 0.5, 1.0]}, n_jobs=-1)
         clf.fit(comments, feature)
         
         self.report_results(clf, 'GridSearch_MNB', type, comments, feature, True)
@@ -104,11 +104,6 @@ class Models:
         return clf
 
     def top_decision_tree_classifier(self, comments, feature, params, type: str):
-        params = {
-            'criterion': ['gini', 'entropy'],
-            'max_depth': [2, 8],
-            'min_samples_split': [2, 3, 4]
-        }
         clf = GridSearchCV(DecisionTreeClassifier(), param_grid=params)
         clf.fit(comments, feature)
 
@@ -117,12 +112,6 @@ class Models:
         return clf
 
     def top_perceptron_classifier(self, comments, feature, params, type: str):
-        params = {
-            'solver': ['adam', 'sgd'],
-            'activation': ['logistic', 'tanh', 'relu', 'identity'],
-            'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
-            'max_iter': [50]
-        }
         clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
         clf.fit(comments, feature)
 
@@ -165,5 +154,5 @@ class Models:
     def load_model(self, model_path):
         return pickle.load(model_path)
 
-    def get_train_test_split(self, vector, emotions, sentiments, train, test, random: int):
-        return train_test_split(vector, emotions, sentiments, train_size=train, test_size=test, random_state=random)
+    def get_train_test_split(self, vector, emotions, sentiments, train):
+        return train_test_split(vector, emotions, sentiments, train_size=train)

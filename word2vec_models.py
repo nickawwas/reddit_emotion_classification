@@ -39,7 +39,7 @@ if __name__ == '__main__':
         embeddings.append(arr.tolist())
 
     # Split dataset into training and testing split
-    comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(embeddings, np_emotions, np_sentiments, 0.8, 0.2, 0)
+    comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(embeddings, np_emotions, np_sentiments, 0.8)
 
     with open(PERF_FILE, 'w') as performance:
         performance.write(f'Number of tokens in the dataset (excluding punctuation): {num_tokens}')
@@ -51,9 +51,15 @@ if __name__ == '__main__':
 
     print('Word2Vec Perceptron Classification For Sentiments')
     models.perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
-
+    
+    params = {
+        'solver': ['adam', 'sgd'],
+        'activation': ['softmax', 'tanh', 'relu', 'identity'],
+        'hidden_layer_sizes': [(50, 50, 50), (20, 40, 60)],
+        'max_iter': [50, 75]
+    }
     print('Word2Vec GridSearch Perceptron classification For Emotions')
-    models.top_perceptron_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_perceptron_classifier(comments_train, emotions_train, params, 'Emotions')
 
     print('Word2Vec GridSearch Perceptron classification For Sentiments')
-    models.top_perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.top_perceptron_classifier(comments_train, sentiments_train, params, 'Sentiments')
