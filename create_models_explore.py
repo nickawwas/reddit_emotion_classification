@@ -66,7 +66,7 @@ if __name__ == '__main__':
             'solver': ['adam', 'sgd'],
             'activation': ['logistic', 'tanh', 'relu', 'identity'],
             'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
-            'max_iter': [20]
+            'max_iter': [25]
         }
         print('GridSearch Perceptron classification For Emotions')
         models.top_perceptron_classifier(comments_train, emotions_train, params, 'Emotions')

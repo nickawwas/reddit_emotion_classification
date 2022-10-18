@@ -26,8 +26,10 @@ def test_models():
     return
 
 def run_all():
-    os.system('python create_models.py')
     os.system('python word2vec_models.py')
+    os.system('python word2vec_models.py')
+    os.system('python word2vec_models.py')
+    os.system('python create_models.py')
     os.system('python create_models_explore.py')
 
 if __name__ == '__main__':

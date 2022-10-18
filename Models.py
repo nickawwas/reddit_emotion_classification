@@ -1,6 +1,7 @@
 import json
 import os
 import pickle
+import matplotlib
 import numpy as np
 import graphviz 
 import gensim.downloader as loader
@@ -57,32 +58,20 @@ class Models:
             plt_axis.set_title(f"{data_type} Distribution")
         return labels
 
-    def render_graph(self, dtc):
-        # dot_data = tree.export_graphviz(dtc, out_file=None,
-        # # feature_names=['Outlook', 'Temperature', 'Humidity', 'Windy'],
-        # # class_names=['Don\'t Play', 'Play'],
-        # filled=True, rounded=True) 
-        # graph = graphviz.Source(dot_data) 
-        # graph.render("mytree")
-        return
-
     def naive_bayes_classifier(self, comments, feature, type: str):
         # Train and test Multinomial Naive Bayes Classifier
         clf = MultinomialNB()
         clf.fit(comments, feature)
 
-        self.report_results(clf, 'Naive Bayes Classifier', type, comments, feature, False)
-        self.export_model(clf, 'mnb', type.lower())
+        self.report_results(clf, 'Naive_Bayes_Classifier', type, comments, feature, False)
+        self.export_model(clf, 'Naive_Bayes_Classifier', type.lower())
         return clf
 
     def decision_tree_classifier(self, comments, feature, type: str):
         clf = DecisionTreeClassifier()
         clf.fit(comments, feature)
-
-        self.render_graph(clf) #TODO
-
-        self.report_results(clf, 'Decision Tree Classifier', type, comments, feature, False)
-        self.export_model(clf, 'dct', type.lower())
+        self.report_results(clf, 'Decision_Tree_Classifier', type, comments, feature, False)
+        self.export_model(clf, 'Decision_Tree_Classifier', type.lower())
         return clf
 
     def perceptron_classifier(self, comments, feature, type: str):
@@ -90,7 +79,7 @@ class Models:
         clf.fit(comments, feature)
 
         self.report_results(clf, 'Perceptron', type, comments, feature, False)    
-        self.export_model(clf, 'mlp', type.lower())
+        self.export_model(clf, 'Perceptron', type.lower())
         return clf
 
     def top_mnb_classifier(self, comments, feature, type: str):
@@ -111,7 +100,7 @@ class Models:
         return clf
 
     def top_perceptron_classifier(self, comments, feature, params, type: str):
-        clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
+        clf = GridSearchCV(MLPClassifier(), param_grid=params)
         clf.fit(comments, feature)
 
         self.report_results(clf, 'GridSearch_MLP', type, comments, feature, True)
@@ -128,9 +117,9 @@ class Models:
         with open(self.perf_file, 'a') as performance:
             performance.writelines(f'\n{classifier_type} - classifying {feature_type}: \n\nParams: {clf} \n\nScore {score}\n')
             performance.writelines('\nConfusion Matrix:\n')
-            cfm = np.array2string(confusion_matrix(feature, prediction, labels=clf.classes_))
+            cfm = np.array2string(confusion_matrix(feature, prediction))
             performance.writelines(f'{cfm}\n')
-            self.output_confusion_matrix(cfm, clf, classifier_type, feature_type)
+            self.output_confusion_matrix(feature, prediction, classifier_type, feature_type)
             performance.writelines('\nClassification Report:\n')
             performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n')
             
@@ -138,9 +127,12 @@ class Models:
                 performance.writelines(f'Best parameters: {clf.best_params_}\n')
                 performance.writelines(f'Best score: {clf.best_score_}\n\n')
 
-    def output_confusion_matrix(self, cfm, clf, classifier_type, feature_type):
-        ConfusionMatrixDisplay(cfm, clf.classes_)
-        plt.savefig(f'{self.export_path}/{classifier_type}_confusion_matrix_{feature_type}.pdf')
+    def output_confusion_matrix(self, feature, prediction, classifier_type, feature_type):
+        if not os.path.exists(f'{self.export_path}/{classifier_type}'):
+            os.makedirs(f'{self.export_path}/{classifier_type}')
+        ConfusionMatrixDisplay.from_predictions(y_true=feature, y_pred=prediction, cmap='viridis')
+        plt.gcf().set_size_inches(20, 13)
+        plt.savefig(f'{self.export_path}/{classifier_type}/{classifier_type}_confusion_matrix_{feature_type}_{self.test_case}.pdf')
 
     def export_model(self, clf, classifier_type: str, feature_type: str):
         if not os.path.exists(f'{self.export_path}/{classifier_type}'):

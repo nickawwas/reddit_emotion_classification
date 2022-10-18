@@ -75,7 +75,7 @@ if __name__ == '__main__':
         'solver': ['adam', 'sgd'],
         'activation': ['logistic', 'tanh', 'relu', 'identity'],
         'hidden_layer_sizes': [(50, 50, 50), (20, 40, 60)],
-        'max_iter': [50, 75]
+        'max_iter': [50]
     }
     print('Word2Vec GridSearch Perceptron classification For Emotions')
     models.top_perceptron_classifier(comments_train, emotions_train, params, 'Emotions')
