@@ -1,21 +1,40 @@
 import nltk
-import os
 import numpy as np
-import pickle
-import gensim.downloader as loader
 
 from Models import Models
-from gensim.models import KeyedVectors
 from nltk.tokenize import RegexpTokenizer
 nltk.download('punkt')
 
-MODEL = 'models/word2vec/word2vec-google-news-300.model'
+MODEL = 'models/word2vec'
+GIGAWORD = 'models/gigaword'
+TWITTER = 'models/twitter'
 EMOTIONS_DATASET = 'goemotions.json'
 PERF_FILE = 'performance_w2v.txt'
 
 if __name__ == '__main__':  
-    models = Models(EMOTIONS_DATASET, 'models/word2vec', PERF_FILE, '0.8')
-    model = models.import_model('models/word2vec', 'word2vec-google-news-300')
+
+    option = input('Select which model to train: \n[1] Word2Vec\n[2] Gigaword\n[3] Twitter\n')
+    model_type = None
+    to_import = False
+    perf_file = ''
+    model_path = ''
+    model_name = ''
+    if option == '1':
+        perf_file = PERF_FILE
+        model_path = MODEL
+        model_name = 'word2vec-google-news-300'
+    elif option == '2':
+        perf_file = 'performance_gigaword.txt'
+        model_path = GIGAWORD
+        model_name = 'glove-wiki-gigaword-50'
+    elif option == '3':
+        perf_file = 'performance_twitter.txt'
+        model_path = TWITTER
+        model_name = 'glove-twitter-25'
+
+    models = Models(EMOTIONS_DATASET, model_path, perf_file, '0.8')
+
+    model = models.import_model(model_path, model_name)
 
     np_comments, np_emotions, np_sentiments = models.get_dataset()
 
