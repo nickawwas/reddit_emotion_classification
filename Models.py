@@ -11,7 +11,7 @@ from gensim.models import KeyedVectors
 from sklearn.naive_bayes import MultinomialNB
 from sklearn.tree import DecisionTreeClassifier
 from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import confusion_matrix, classification_report
+from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
 
 class Models:
     dataset  = 'goemotions.json'
@@ -39,12 +39,11 @@ class Models:
         
         self.plot_distribution(emotions, ax1, "Emotions", style)
         self.plot_distribution(sentiments, ax2, "Sentiments", style)
-        plt.savefig(fname="charts/post_distribution_barchart.pdf")
+        plt.savefig(fname=f'charts/post_distribution_{style}chart.pdf')
 
     def plot_distribution(self, np_data, plt_axis, data_type, style: str):
         # Obtain number of occurences of each emotion or sentiment
         labels, frequency = np.unique(np_data, return_counts=True)
-
         if style == 'bar':
             # Plot emotions or sentiments in bar chart
             plt_axis.bar(labels, frequency)
@@ -129,13 +128,19 @@ class Models:
         with open(self.perf_file, 'a') as performance:
             performance.writelines(f'\n{classifier_type} - classifying {feature_type}: \n\nParams: {clf} \n\nScore {score}\n')
             performance.writelines('\nConfusion Matrix:\n')
-            performance.writelines(f'{np.array2string(confusion_matrix(feature, prediction))}\n')        
+            cfm = np.array2string(confusion_matrix(feature, prediction, labels=clf.classes_))
+            performance.writelines(f'{cfm}\n')
+            self.output_confusion_matrix(cfm, clf, classifier_type, feature_type)
             performance.writelines('\nClassification Report:\n')
             performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n')
             
             if is_gs:
                 performance.writelines(f'Best parameters: {clf.best_params_}\n')
                 performance.writelines(f'Best score: {clf.best_score_}\n\n')
+
+    def output_confusion_matrix(self, cfm, clf, classifier_type, feature_type):
+        ConfusionMatrixDisplay(cfm, clf.classes_)
+        plt.savefig(f'{self.export_path}/{classifier_type}_confusion_matrix_{feature_type}.pdf')
 
     def export_model(self, clf, classifier_type: str, feature_type: str):
         if not os.path.exists(f'{self.export_path}/{classifier_type}'):
@@ -152,7 +157,7 @@ class Models:
         return KeyedVectors.load(f'{model_path}/{model_name}.model')
 
     def load_model(self, model_path):
-        return pickle.load(model_path)
+        return pickle.load(open(model_path, 'rb'))
 
     def get_train_test_split(self, vector, emotions, sentiments, train):
         return train_test_split(vector, emotions, sentiments, train_size=train)
