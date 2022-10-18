@@ -25,33 +25,40 @@ def train_models(dataset, model_name, is_demo):
 def test_models():
     return
 
+def run_all():
+    os.system('python create_models.py')
+    os.system('python word2vec_models.py')
+    os.system('python create_models_explore.py')
+
 if __name__ == '__main__':
-    if len(sys.argv) < 5:
-        print('Please run command following the format shown below:')
-        print('"python run_models.py {model_name} {dataset} {type} {train or test}"')
-        print('Options: ... TODO')
-        exit()
 
-    model_name = dataset = type = method = ''
-    for i, arg in enumerate(sys.argv):
-        if i == 1:
-            model_name = str(arg)
-        elif i == 2:
-            dataset = str(arg)
-        elif i == 3:
-            type = str(arg)
-        elif i == 4:
-            method = str(arg)
+    run_all()
+    # if len(sys.argv) < 5:
+    #     print('Please run command following the format shown below:')
+    #     print('"python run_models.py {model_name} {dataset} {type} {train or test}"')
+    #     print('Options: ... TODO')
+    #     exit()
 
-    is_demo = input('Is this a demo? Y/N: ')
-    if is_demo.lower() == 'y':
-        is_demo = True
-    else:
-        is_demo = False
+    # model_name = dataset = type = method = ''
+    # for i, arg in enumerate(sys.argv):
+    #     if i == 1:
+    #         model_name = str(arg)
+    #     elif i == 2:
+    #         dataset = str(arg)
+    #     elif i == 3:
+    #         type = str(arg)
+    #     elif i == 4:
+    #         method = str(arg)
 
-    if method == 'train':
-        train_models(dataset, model_name, is_demo)
-    elif method == 'test':
-        test_models()
-    else:
-        print('Invalid method input, please use: train or test')
+    # is_demo = input('Is this a demo? Y/N: ')
+    # if is_demo.lower() == 'y':
+    #     is_demo = True
+    # else:
+    #     is_demo = False
+
+    # if method == 'train':
+    #     train_models(dataset, model_name, is_demo)
+    # elif method == 'test':
+    #     test_models()
+    # else:
+    #     print('Invalid method input, please use: train or test')

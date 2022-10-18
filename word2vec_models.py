@@ -1,7 +1,11 @@
 import nltk
+import os
 import numpy as np
+import pickle
+import gensim.downloader as loader
 
 from Models import Models
+from gensim.models import KeyedVectors
 from nltk.tokenize import RegexpTokenizer
 nltk.download('punkt')
 

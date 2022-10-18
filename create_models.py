@@ -26,7 +26,7 @@ if __name__ == '__main__':
 
     print('Multinominal Naive Bayes Classification For Emotions')
     models.naive_bayes_classifier(comments_train, emotions_train, 'Emotions')
-
+    
     print('Multinominal Naive Bayes Classification For Sentiments')
     models.naive_bayes_classifier(comments_train, sentiments_train, 'Sentiments')
 

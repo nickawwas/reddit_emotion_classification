@@ -155,12 +155,12 @@ class Models:
         pickle.dump(clf, open(f'{self.export_path}/{classifier_type}/{classifier_type}_{feature_type}_{self.test_case}.model', 'wb'))
 
     def import_model(self, model_path: str, model_name: str):
-        if not os.path.exists(model_path):
+        if not os.path.exists(f'{model_path}/{model_name}.model'):
             model = loader.load(model_name)
             os.makedirs(model_path)
-            pickle.dump(model, open(model_path, 'wb'))
-    
-        return KeyedVectors.load(model_path)
+            pickle.dump(model, open(f'{model_path}/{model_name}.model', 'wb'))
+            
+        return KeyedVectors.load(f'{model_path}/{model_name}.model')
 
     def load_model(self, model_path):
         return pickle.load(model_path)
