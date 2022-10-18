@@ -1,17 +1,5 @@
-import json
-import os
-import pickle
-import numpy as np
-import graphviz 
-
 from Models import Models
-from matplotlib import pyplot as plt
 from sklearn.feature_extraction.text import CountVectorizer
-from sklearn.model_selection import GridSearchCV, train_test_split
-from sklearn.naive_bayes import MultinomialNB
-from sklearn.tree import DecisionTreeClassifier
-from sklearn.neural_network import MLPClassifier
-from sklearn.metrics import confusion_matrix, classification_report
 
 EMOTIONS_DATASET = 'goemotions.json'
 PERF_FILE = 'performance.txt'
@@ -43,31 +31,31 @@ if __name__ == '__main__':
     models.naive_bayes_classifier(comments_train, sentiments_train, 'Sentiments')
 
     print('Decision Tree classification For Emotions')
-    Models.decision_tree_classifier(comments_train, emotions_train, 'Emotions')
+    models.decision_tree_classifier(comments_train, emotions_train, 'Emotions')
 
     print('Decision Tree classification For Sentiments')
-    Models.decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
 
     print('Perceptron classification For Emotions')
-    Models.perceptron_classifier(comments_train, emotions_train, 'Emotions')
+    models.perceptron_classifier(comments_train, emotions_train, 'Emotions')
 
     print('Perceptron classification For Sentiments')
-    Models.perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
 
     print('GridSearch Multinominal Naive Bayes Classification For Emotions')
-    Models.top_mnb_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_mnb_classifier(comments_train, emotions_train, 'Emotions')
 
     print('GridSearch Multinominal Naive Bayes Classification For Sentiments')
-    Models.top_mnb_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.top_mnb_classifier(comments_train, sentiments_train, 'Sentiments')
 
     print('GridSearch Decision Tree classification For Emotions')
-    Models.top_decision_tree_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_decision_tree_classifier(comments_train, emotions_train, 'Emotions')
 
     print('GridSearch Decision Tree classification For Sentiments')
-    Models.top_decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
+    models.top_decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
 
     print('GridSearch Perceptron classification For Emotions')
-    Models.top_perceptron_classifier(comments_train, emotions_train, 'Emotions')
+    models.top_perceptron_classifier(comments_train, emotions_train, 'Emotions')
 
     print('GridSearch Perceptron classification For Sentiments')
-    Models.top_perceptron_classifier(comments_train, sentiments_train, 'Sentiments', PERF_FILE)
+    models.top_perceptron_classifier(comments_train, sentiments_train, 'Sentiments')

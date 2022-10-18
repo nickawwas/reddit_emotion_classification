@@ -1,8 +1,5 @@
 import nltk
 import numpy as np
-import os
-import pickle
-import gensim.downloader as loader
 
 from Models import Models
 from nltk.tokenize import RegexpTokenizer
@@ -11,7 +8,6 @@ nltk.download('punkt')
 MODEL = 'models/word2vec/word2vec-google-news-300.model'
 EMOTIONS_DATASET = 'goemotions.json'
 PERF_FILE = 'performance_w2v.txt'
-# EMOTIONS_DATASET = 'fakeemotions.json'
 
 if __name__ == '__main__':  
     models = Models(EMOTIONS_DATASET, 'models/word2vec', PERF_FILE, '0.8')
@@ -35,13 +31,13 @@ if __name__ == '__main__':
         for key in tokens:
             if not model.has_index_for(key):
                 missed_keys += 1
-        arr = model.get_mean_vector(tokens, ignore_missing=True) #later, try to use ignore missing false to catch KeyError to count hit rate
+        arr = model.get_mean_vector(tokens, ignore_missing=True)
         embeddings.append(arr.tolist())
 
     # Split dataset into training and testing split
     comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(embeddings, np_emotions, np_sentiments, 0.8, 0.2, 0)
 
-    with open(PERF_FILE, 'a') as performance:
+    with open(PERF_FILE, 'w') as performance:
         performance.write(f'Number of tokens in the dataset (excluding punctuation): {num_tokens}')
         hit_rate = (num_tokens - missed_keys) / num_tokens
         performance.write(f'\nOverall hit rate: {hit_rate}\n')

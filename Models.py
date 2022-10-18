@@ -109,7 +109,7 @@ class Models:
             'max_depth': [2, 8],
             'min_samples_split': [2, 3, 4]
         }
-        clf = GridSearchCV(DecisionTreeClassifier(), param_grid=params, n_jobs=-1)
+        clf = GridSearchCV(DecisionTreeClassifier(), param_grid=params)
         clf.fit(comments, feature)
 
         self.report_results(clf, 'GridSearch_DCT', type, comments, feature, True)
@@ -126,7 +126,7 @@ class Models:
         clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
         clf.fit(comments, feature)
 
-        self.report_results(clf, 'GridSearch_Perceptron', type, comments, feature, True)
+        self.report_results(clf, 'GridSearch_MLP', type, comments, feature, True)
         self.export_model(clf, 'GridSearch_MLP', type.lower())
         return clf
 

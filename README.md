@@ -43,7 +43,7 @@ later to load, avoiding the need to rebuild the models
 
 Run the command below:
 ```
-python pre_built.py {model_name} {type}
+python run_models.py {model_name} {dataset} {type} {train or test}
 ```
 
 List of entries for `model_name`:
@@ -53,6 +53,8 @@ List of entries for `model_name`:
 - GridSearch_DCT
 - GridSearch_MNB
 - GridSearch_Perceptron
+- word2vec_mlp
+- word2vec_gs_mlp
 
 List of entries for `type`:
 - emotions
