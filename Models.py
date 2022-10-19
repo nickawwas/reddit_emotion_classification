@@ -1,9 +1,7 @@
 import json
 import os
 import pickle
-import matplotlib
 import numpy as np
-import graphviz 
 import gensim.downloader as loader
 
 from matplotlib import pyplot as plt
