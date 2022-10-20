@@ -98,7 +98,7 @@ class Models:
         return clf
 
     def top_perceptron_classifier(self, comments, feature, params, type: str):
-        clf = GridSearchCV(MLPClassifier(), param_grid=params)
+        clf = GridSearchCV(MLPClassifier(), param_grid=params, n_jobs=-1)
         clf.fit(comments, feature)
 
         self.report_results(clf, 'GridSearch_MLP', type, comments, feature, True)
@@ -113,7 +113,7 @@ class Models:
 
         # create performance file entry
         with open(self.perf_file, 'a') as performance:
-            performance.writelines(f'\n{classifier_type} - classifying {feature_type}: \n\nParams: {clf} \n\nScore {score}\n')
+            performance.writelines(f'\n{classifier_type} - classifying {feature_type} Test Case: {self.test_case}: \n\nParams: {clf} \n\nScore {score}\n')
             performance.writelines('\nConfusion Matrix:\n')
             cfm = np.array2string(confusion_matrix(feature, prediction))
             performance.writelines(f'{cfm}\n')
