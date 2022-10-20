@@ -13,16 +13,12 @@ from sklearn.neural_network import MLPClassifier
 from sklearn.metrics import confusion_matrix, classification_report, ConfusionMatrixDisplay
 
 class Models:
-    dataset  = 'goemotions.json'
-    export_path = 'models'
-    perf_file = 'performance.txt'
-    test_case = '0.8'
-
-    def __init__(self, dataset, export_path, perf_file, test_case):
-        self.dataset = 'goemotions.json' if dataset == None else dataset
-        self.export_path = 'models' if export_path == None else export_path
-        self.perf_file = 'performance.txt' if perf_file == None else perf_file
-        self.test_case = '0.8' if test_case == None else test_case
+    def __init__(self, dataset = 'goemotions.json', export_path = 'models', perf_file = 'performance.txt', test_case = '0.8', rand = 0):
+        self.dataset = dataset
+        self.export_path = export_path
+        self.perf_file = perf_file
+        self.test_case = test_case
+        self.rand = rand
 
     def get_dataset(self):
         with open(self.dataset, 'r') as file:
@@ -113,11 +109,11 @@ class Models:
 
         # create performance file entry
         with open(self.perf_file, 'a') as performance:
-            performance.writelines(f'\n{classifier_type} - classifying {feature_type} Test Case: {self.test_case}: \n\nParams: {clf} \n\nScore {score}\n')
+            performance.writelines(f'\n{classifier_type} - classifying {feature_type} Test Case: {self.test_case} Random: {self.rand}: \n\nParams: {clf} \n\nScore {score}\n')
             performance.writelines('\nConfusion Matrix:\n')
             cfm = np.array2string(confusion_matrix(feature, prediction))
             performance.writelines(f'{cfm}\n')
-            self.output_confusion_matrix(feature, prediction, classifier_type, feature_type)
+            self.output_confusion_matrix(cfm, classifier_type, feature_type)
             performance.writelines('\nClassification Report:\n')
             performance.writelines(f'{classification_report(feature, prediction, zero_division=1)}\n')
             
@@ -125,18 +121,18 @@ class Models:
                 performance.writelines(f'Best parameters: {clf.best_params_}\n')
                 performance.writelines(f'Best score: {clf.best_score_}\n\n')
 
-    def output_confusion_matrix(self, feature, prediction, classifier_type, feature_type):
+    def output_confusion_matrix(self, cfm, classifier_type, feature_type):
         if not os.path.exists(f'{self.export_path}/{classifier_type}'):
             os.makedirs(f'{self.export_path}/{classifier_type}')
-        ConfusionMatrixDisplay.from_predictions(y_true=feature, y_pred=prediction, cmap='viridis')
+        ConfusionMatrixDisplay(cfm)
         plt.gcf().set_size_inches(20, 13)
-        plt.savefig(f'{self.export_path}/{classifier_type}/{classifier_type}_confusion_matrix_{feature_type}_{self.test_case}.pdf')
+        plt.savefig(f'{self.export_path}/{classifier_type}/{classifier_type}_confusion_matrix_{feature_type}_{self.test_case}_{self.rand}.pdf')
 
     def export_model(self, clf, classifier_type: str, feature_type: str):
         if not os.path.exists(f'{self.export_path}/{classifier_type}'):
             os.makedirs(f'{self.export_path}/{classifier_type}')
         
-        pickle.dump(clf, open(f'{self.export_path}/{classifier_type}/{classifier_type}_{feature_type}_{self.test_case}.model', 'wb'))
+        pickle.dump(clf, open(f'{self.export_path}/{classifier_type}/{classifier_type}_{feature_type}_{self.test_case}_{self.rand}.model', 'wb'))
 
     def import_model(self, model_path: str, model_name: str):
         if not os.path.exists(f'{model_path}/{model_name}.model'):
