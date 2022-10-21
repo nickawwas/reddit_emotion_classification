@@ -186,7 +186,7 @@ class Models:
     def import_model(self, model_path: str, model_name: str):
         if not os.path.exists(f'{model_path}/{model_name}.model'):
             model = loader.load(model_name)
-            # os.makedirs(model_path)
+            os.makedirs(model_path)
             pickle.dump(model, open(f'{model_path}/{model_name}.model', 'wb'))
             
         return KeyedVectors.load(f'{model_path}/{model_name}.model')
