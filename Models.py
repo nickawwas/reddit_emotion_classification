@@ -54,17 +54,17 @@ class Models:
 
         # Run MLP
         print('Perceptron classification For Emotions')
-        self.perceptron_classifier(self.comments_train, self.emotions_test, 'Emotions')
+        self.perceptron_classifier(self.emotions_train, self.emotions_test, 'Emotions')
 
         print('Perceptron classification For Sentiments')
-        self.perceptron_classifier(self.comments_train, self.sentiments_test, 'Sentiments')
+        self.perceptron_classifier(self.sentiments_train, self.sentiments_test, 'Sentiments')
 
         # Run GS MLP
         print('GridSearch Perceptron classification For Emotions')
-        self.top_perceptron_classifier(self.comments_train, params_mlp, self.emotions_test, 'Emotions')
+        self.top_perceptron_classifier(self.emotions_train, params_mlp, self.emotions_test, 'Emotions')
 
         print('GridSearch Perceptron classification For Sentiments')
-        self.top_perceptron_classifier(self.comments_train, params_mlp, self.sentiments_test, 'Sentiments')
+        self.top_perceptron_classifier(self.sentiments_train, params_mlp, self.sentiments_test, 'Sentiments')
 
     def get_dataset(self):
         with open(self.dataset, 'r') as file:
