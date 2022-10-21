@@ -55,8 +55,10 @@ def update_names(path):
                 np_comments, emotions, sentiments = get_embeddings(keyed_vec, perf_file, np_comments, emotions, sentiments)
             elif path_struct[1] == 'twitter':
                 keyed_vec = models.import_model(export_path, 'glove-twitter-25')
+                np_comments, emotions, sentiments = get_embeddings(keyed_vec, perf_file, np_comments, emotions, sentiments)
             elif path_struct[1] == 'word2vec':
                 keyed_vec = models.import_model(export_path, 'word2vec-google-news-300')
+                np_comments, emotions, sentiments = get_embeddings(keyed_vec, perf_file, np_comments, emotions, sentiments)
             else:
                 # Create count vectorizer and learn vocabulary from comments to obtain single feature vector
                 vectorizer = CountVectorizer()
@@ -100,7 +102,7 @@ def get_embeddings(keyed_vec, perf_file, np_comments, np_emotions, np_sentiments
                 missed_keys += 1
         arr = keyed_vec.get_mean_vector(tokens, ignore_missing=True)
         embeddings.append(arr.tolist())
-        
+
     return embeddings, np_emotions, np_sentiments
 
 if __name__ == '__main__':

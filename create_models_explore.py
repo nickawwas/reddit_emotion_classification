@@ -19,57 +19,33 @@ if __name__ == '__main__':
     with open(PERF_FILE, 'w') as performance:
         performance.write(f'Vocabulary size: {len(tokens)}\n')
 
-    # Perform the substeps of question 2.3 for 2 different splits: 95%/5% and 50%/50%
-    test_cases = ['0.95', '0.5', '0.25']
+
+    params_dct = {
+        'criterion': ['gini', 'entropy'],
+        'max_depth': [2, 8],
+        'min_samples_split': [2, 3, 4]
+    }
+
+    params_mlp = {
+        'solver': ['adam', 'sgd'],
+        'activation': ['logistic', 'tanh', 'relu', 'identity'],
+        'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
+        'max_iter': [10]
+    }
+
+    # Perform the substeps of question 2.3 for 4 different splits: 80%/20%, 80%/20%, 95%/5% and 25%/75%
+    test_cases = ['0.8', '0.8', '0.95', '0.25']
+    rand = 0
 
     for test_case in test_cases:
-        models = Models(EMOTIONS_DATASET, 'models_explore', PERF_FILE, test_case)
+        if test_case == '0.8':
+            rand += 1
+        else:
+            rand = 0
 
-        comments_train, comments_test, emotions_train, emotions_test, sentiments_train, sentiments_test = models.get_train_test_split(comments_vector, np_emotions, np_sentiments, float(test_case))
-        
-        print('Multinominal Naive Bayes Classification For Emotions')
-        models.naive_bayes_classifier(comments_train, emotions_train, 'Emotions')
-         
-        print('Multinominal Naive Bayes Classification For Sentiments')
-        models.naive_bayes_classifier(comments_train, sentiments_train, 'Sentiments')
+        models = Models(EMOTIONS_DATASET, 'models_explore', PERF_FILE, test_case, rand)
 
-        print('Decision Tree classification For Emotions')
-        models.decision_tree_classifier(comments_train, emotions_train, 'Emotions')
+        models.get_train_test_split(comments_vector, np_emotions, np_sentiments)
 
-        print('Decision Tree classification For Sentiments')
-        models.decision_tree_classifier(comments_train, sentiments_train, 'Sentiments')
+        models.run_models(params_dct=params_dct, params_mlp=params_mlp)
 
-        print('Perceptron classification For Emotions')
-        models.perceptron_classifier(comments_train, emotions_train, 'Emotions')
-
-        print('Perceptron classification For Sentiments')
-        models.perceptron_classifier(comments_train, sentiments_train, 'Sentiments')
-
-        print('GridSearch Multinominal Naive Bayes Classification For Emotions')
-        models.top_mnb_classifier(comments_train, emotions_train, 'Emotions')
-
-        print('GridSearch Multinominal Naive Bayes Classification For Sentiments')
-        models.top_mnb_classifier(comments_train, sentiments_train, 'Sentiments')
-
-        params = {
-            'criterion': ['gini', 'entropy'],
-            'max_depth': [2, 8],
-            'min_samples_split': [2, 3, 4]
-        }
-        print('GridSearch Decision Tree classification For Emotions')
-        models.top_decision_tree_classifier(comments_train, emotions_train, params, 'Emotions')
-
-        print('GridSearch Decision Tree classification For Sentiments')
-        models.top_decision_tree_classifier(comments_train, sentiments_train, params, 'Sentiments')
-        
-        params = {
-            'solver': ['adam', 'sgd'],
-            'activation': ['logistic', 'tanh', 'relu', 'identity'],
-            'hidden_layer_sizes': [(30, 30, 30), (10, 30, 50)],
-            'max_iter': [25]
-        }
-        print('GridSearch Perceptron classification For Emotions')
-        models.top_perceptron_classifier(comments_train, emotions_train, params, 'Emotions')
-
-        print('GridSearch Perceptron classification For Sentiments')
-        models.top_perceptron_classifier(comments_train, sentiments_train, params, 'Sentiments')
