@@ -81,6 +81,7 @@ class Models:
         self.plot_distribution(emotions, ax1, "Emotions", style)
         self.plot_distribution(sentiments, ax2, "Sentiments", style)
         plt.savefig(fname=f'charts/post_distribution_{style}chart.pdf')
+        plt.close()
 
     def plot_distribution(self, np_data, plt_axis, data_type, style: str):
         # Obtain number of occurences of each emotion or sentiment
@@ -173,14 +174,14 @@ class Models:
         disp = ConfusionMatrixDisplay(confusion_matrix=cfm)
         disp.plot()
         plt.gcf().set_size_inches(20, 13)
-        test_case = self.test_case.replace('.', '-')
-        plt.savefig(f'{self.export_path}/{classifier_type}/{classifier_type}_confusion_matrix_{feature_type}_{test_case}_{self.rand}.pdf')
+        test_case = float(self.test_case) * 100
+        plt.savefig(f'{self.export_path}/{classifier_type}/{classifier_type}_confusion_matrix_{feature_type}_{int(test_case)}_{self.rand}.pdf')
 
     def export_model(self, clf, classifier_type: str, feature_type: str):
         if not os.path.exists(f'{self.export_path}/{classifier_type}'):
             os.makedirs(f'{self.export_path}/{classifier_type}')
-        test_case = self.test_case.replace('.', '-')
-        pickle.dump(clf, open(f'{self.export_path}/{classifier_type}/{classifier_type}_{feature_type}_{test_case}_{self.rand}.model', 'wb'))
+        test_case = float(self.test_case) * 100
+        pickle.dump(clf, open(f'{self.export_path}/{classifier_type}/{classifier_type}_{feature_type}_{int(test_case)}_{self.rand}.model', 'wb'))
 
     def import_model(self, model_path: str, model_name: str):
         if not os.path.exists(f'{model_path}/{model_name}.model'):

@@ -1,2 +1,0 @@
-Number of tokens in the dataset (excluding punctuation): 2254673
-Overall hit rate: 0.8264763892591076

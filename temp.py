@@ -22,8 +22,7 @@ def update_names(path):
             perf_file = 'performance.txt'
             test_case = splits[0].split('_')
             test_case = test_case[len(test_case) - 2]
-            test_case = test_case.replace('-', '.')
-
+            test_case = float(test_case) / 100
             classifier_type = path_struct[1]
             is_gs = False
             feature = None
@@ -79,7 +78,6 @@ def update_names(path):
 
             print(path.split('/'))
             print(splits)
-            # exit()
         
         os.remove(f'{path}/{file}')
         
@@ -121,4 +119,5 @@ if __name__ == '__main__':
                         update_names(path)
             else:
                 path = f'{main_dir}/{dir}'
-                update_names(path)
+                if os.path.isdir(path):
+                    update_names(path)
